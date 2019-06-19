@@ -1,29 +1,27 @@
 const express = require('express');
+const Sequelize = require('sequelize');
 const logger = require('../config/logger');
-const mongoose = require('mongoose');
+const PersonModel = require('../model/Person');
 
 const router = express.Router();
-0
-mongoose.connect('mongodb://localhost:27017/ListaTelefonica', { useNewUrlParser:true });
 
-require('../model/Person');
-
-const Person = mongoose.model('Person');
-
- router.get('/', async (req, res) =>{
-    const persons = await Person.find();
-     res.send(persons);
+ router.get('/',  (req, res) =>{
+     PersonModel.findAll()
+    .then(people => res.json(people))
 });
 
 router.get('/:name', async (req, res) =>{
-    const persons = await Person.find({name:req.body.name});
-     res.send(persons);
+    await PersonModel.findOne({
+        where:{
+            name: req.params.name,
+        }
+    }).then(people => res.json(people))
 });
 
 router.post('/', (req, res) =>{
     const reqBody = req.body;
     if (reqBody) {
-        Person.create(req.body);
+        PersonModel.create(req.body);
         res.sendStatus(201);
     }else{
         res.sendStatus(400);
@@ -31,18 +29,32 @@ router.post('/', (req, res) =>{
 });
 
 
-router.delete('/:name', async (req, res)=> {     
-    await Person.findOneAndRemove({name:req.params.name});
-    res.sendStatus(200);
-});
-router.delete('/:name', async (req, res)=> {     
-    await Person.findOneAndUpdate({name:req.params.name});
-    res.sendStatus(200);
+router.delete('/:id', async (req, res)=> {     
+    await PersonModel.destroy({
+        where: {
+            id: req.params.id,
+        }
+    }).then(()=>{
+        res.sendStatus(200);
+    });   
 });
 
-router.put('/:name', async (req,res)=>{
-    await Person.findOneAndUpdate(req.params.name, req.body,{new:true} );
-    return res.sendStatus(200);
+router.put('/:id', async (req,res)=>{
+    await PersonModel.update({
+        id: req.body.id,
+        // name: req.body.name,
+        // email: req.body.email,
+        // telefone: req.body.telefone,
+        // foto: req.body.telefone
+    },
+        {   
+         where:{
+            id: req.params.id
+        }
+        
+    }).then(()=>{
+        res.sendStatus(200);
+    });   
 });
 module.exports = router;
 
