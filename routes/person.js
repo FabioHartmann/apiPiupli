@@ -41,11 +41,11 @@ router.delete('/:id', async (req, res)=> {
 
 router.put('/:id', async (req,res)=>{
     await PersonModel.update({
-        id: req.body.id,
-        // name: req.body.name,
-        // email: req.body.email,
-        // telefone: req.body.telefone,
-        // foto: req.body.telefone
+         id: req.body.id,
+         name: req.body.name,
+         email: req.body.email,
+         telefone: req.body.telefone,
+         foto: req.body.foto,
     },
         {   
          where:{
